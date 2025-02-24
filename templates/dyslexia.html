@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dyslexia Assessment Tool</title>
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* CSS Variables for consistent theming */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #2ecc71;
+            --background-color: #f5f6fa;
+            --card-background: #ffffff;
+            --text-color: #2c3e50;
+            --border-radius: 12px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header styles */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Assessment card styles */
+        .assessment-card {
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .assessment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        /* Sentence display styles */
+        .sentence-display {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            margin: 1.5rem 0;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            border-left: 4px solid var(--secondary-color);
+            position: relative;
+        }
+
+        .sentence-display::before {
+            content: '"';
+            position: absolute;
+            left: -2px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 4rem;
+            color: var(--secondary-color);
+            opacity: 0.1;
+        }
+
+        /* Progress bar styles */
+        .progress-container {
+            margin: 2rem 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--secondary-color), var(--success-color));
+            width: 0%;
+            transition: var(--transition);
+        }
+
+        /* Attempts counter styles */
+        .attempts-counter {
+            text-align: right;
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Button styles */
+        .btn {
+            background: linear-gradient(to right, var(--secondary-color), #2980b9);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: linear-gradient(to right, #2980b9, var(--secondary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Loading animation styles */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .loading i {
+            color: var(--secondary-color);
+            font-size: 2rem;
+            animation: spin 1s infinite linear;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Report section styles */
+        .report-section {
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: var(--shadow);
+            display: none;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Score display styles */
+        .score-display {
+            text-align: center;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border-radius: var(--border-radius);
+            background: #f8f9fa;
+            transition: var(--transition);
+        }
+
+        /* Updated color scheme for results */
+        .score-display.significant-signs {
+            background: rgba(231, 76, 60, 0.1);
+            border: 2px solid var(--accent-color);
+        }
+
+        .score-display.no-signs {
+            background: rgba(46, 204, 113, 0.1);
+            border: 2px solid var(--success-color);
+        }
+
+        .score-number {
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Verdict styles */
+        .verdict {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+        }
+
+        .verdict.significant-signs {
+            color: var(--accent-color);
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .verdict.no-signs {
+            color: var(--success-color);
+            background: rgba(46, 204, 113, 0.1);
+        }
+
+        /* Response list styles */
+        #responseList {
+            margin-top: 1rem;
+        }
+
+        #responseList p {
+            padding: 1rem;
+            background: #f8f9fa;
+            margin-bottom: 0.5rem;
+            border-radius: var(--border-radius);
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .assessment-card, .report-section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Dyslexia Assessment Tool</h1>
+            <p>Professional screening interface for dyslexia assessment</p>
+        </header>
+
+        <div class="assessment-card">
+            <div class="form-group">
+                <label for="patientName">
+                    <i class="fas fa-user"></i> Patient's Full Name
+                </label>
+                <input type="text" id="patientName" placeholder="Enter patient's full name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="patientId">
+                    <i class="fas fa-id-card"></i> Patient's ID Number
+                </label>
+                <input type="text" id="patientId" placeholder="Enter patient's ID number" required>
+            </div>
+
+            <div class="attempts-counter">
+                <i class="fas fa-redo"></i> Attempt: <span id="currentAttempt">1</span>/3
+            </div>
+
+            <div class="sentence-display">
+                <p id="generatedSentence">Loading sentence...</p>
+            </div>
+
+            <div class="form-group">
+                <label for="userInput">
+                    <i class="fas fa-keyboard"></i> Patient's Response
+                </label>
+                <input type="text" id="userInput" placeholder="Type the sentence exactly as shown above">
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="progressBar"></div>
+                </div>
+            </div>
+
+            <button class="btn" onclick="submitResponse()" id="submitBtn">
+                <i class="fas fa-paper-plane"></i> Submit Response
+            </button>
+
+            <div class="loading" id="loading">
+                <i class="fas fa-spinner"></i>
+                <p>Processing response...</p>
+            </div>
+        </div>
+
+        <div class="report-section" id="reportSection">
+            <h2><i class="fas fa-chart-bar"></i> Assessment Report</h2>
+            
+            <div class="score-display" id="scoreDisplay">
+                <div class="score-number" id="scoreNumber">0.000</div>
+                <p>Average Dyslexia Score</p>
+                <div class="verdict" id="verdict">Analysis in progress...</div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-list"></i> Patient Responses:</label>
+                <div id="responseList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentAttempt = 1;
+        let currentSentence = '';
+        let responses = [];
+        let scores = [];
+        
+        // Initialize assessment when page loads
+        window.onload = function() {
+            getNewSentence();
+            document.getElementById('userInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    submitResponse();
+                }
+            });
+        }
+
+        // Get a new sentence from the server
+        async function getNewSentence() {
+            try {
+                const response = await fetch('/get_sentence');
+                const data = await response.json();
+                currentSentence = data.sentence;
+                document.getElementById('generatedSentence').textContent = currentSentence;
+            } catch (error) {
+                console.error('Error fetching sentence:', error);
+                alert('Error loading sentence. Please refresh the page.');
+            }
+        }
+
+        // Show/hide loading animation
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            document.getElementById('submitBtn').disabled = show;
+        }
+
+        // Submit user response
+        async function submitResponse() {
+            const userInput = document.getElementById('userInput').value.trim();
+            const patientName = document.getElementById('patientName').value.trim();
+            const patientId = document.getElementById('patientId').value.trim();
+
+            if (!patientName || !patientId) {
+                alert('Please enter patient name and ID');
+                return;
+            }
+
+            if (!userInput) {
+                alert('Please enter a response');
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                const response = await fetch('/analyze_response', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userText: userInput,
+                        sentence: currentSentence,
+                        attemptNumber: currentAttempt
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    alert(data.error);
+                    showLoading(false);
+                    return;
+                }
+
+                // Store response and score
+                responses.push(userInput);
+                scores.push(data.score);
+
+                // Update progress bar
+                const progress = (currentAttempt / 3) * 100;
+                document.getElementById('progressBar').style.width = `${progress}%`;
+                
+                if (currentAttempt < 3) {
+                    // Continue to next attempt
+                    currentAttempt++;
+                    document.getElementById('currentAttempt').textContent = currentAttempt;
+                    document.getElementById('userInput').value = '';
+                    getNewSentence();
+                } else {
+                    // Finish assessment after 3 attempts
+                    await finishAssessment();
+                }
+
+            } catch (error) {
+                console.error('Error submitting response:', error);
+                alert('Error processing response. Please try again.');
+            } finally {
+                showLoading(false);
+            }
+        }
+        // Generate final assessment report
+        async function finishAssessment() {
+            const userName = document.getElementById('patientName').value;
+            const userId = document.getElementById('patientId').value;
+
+            showLoading(true);
+
+            try {
+                // Send data to server for final analysis
+                const response = await fetch('/generate_report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userName: userName,
+                        userId: userId,
+                        responses: responses,
+                        scores: scores
+                    })
+                });
+
+                const data = await response.json();
+                
+                // Update the score display
+                document.getElementById('scoreNumber').textContent = data.avgScore.toFixed(3);
+                document.getElementById('verdict').textContent = data.verdict;
+                
+                // Display all patient responses
+                const responseList = document.getElementById('responseList');
+                responseList.innerHTML = responses.map((resp, index) => 
+                    `<p><i class="fas fa-check"></i> Attempt ${index + 1}: ${resp}</p>`
+                ).join('');
+
+                // Apply appropriate color scheme based on assessment result
+                const scoreDisplay = document.getElementById('scoreDisplay');
+                const verdict = document.getElementById('verdict');
+                
+                // Check verdict text and apply corresponding styles
+                if (data.verdict.toLowerCase().includes('no significant signs')) {
+                    // Green color scheme for no significant signs
+                    scoreDisplay.className = 'score-display no-signs';
+                    verdict.className = 'verdict no-signs';
+                } else {
+                    // Red color scheme for significant signs
+                    scoreDisplay.className = 'score-display significant-signs';
+                    verdict.className = 'verdict significant-signs';
+                }
+
+                // Make report section visible
+                const reportSection = document.getElementById('reportSection');
+                reportSection.style.display = 'block';
+                
+                // Disable submit button after assessment completion
+                document.getElementById('submitBtn').disabled = true;
+                
+                // Scroll to the report section smoothly
+                reportSection.scrollIntoView({ behavior: 'smooth' });
+
+            } catch (error) {
+                console.error('Error generating report:', error);
+                alert('Error generating report. Please try again.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Function to generate PDF report (can be implemented if needed)
+        async function generatePDFReport() {
+            try {
+                const response = await fetch('/generate_pdf', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        patientName: document.getElementById('patientName').value,
+                        patientId: document.getElementById('patientId').value,
+                        responses: responses,
+                        scores: scores,
+                        finalVerdict: document.getElementById('verdict').textContent,
+                        averageScore: document.getElementById('scoreNumber').textContent
+                    })
+                });
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `dyslexia_assessment_${document.getElementById('patientId').value}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                alert('Error generating PDF report. Please try again.');
+            }
+        }
+
+        // Function to reset assessment
+        function resetAssessment() {
+            // Reset all variables
+            currentAttempt = 1;
+            currentSentence = '';
+            responses = [];
+            scores = [];
+
+            // Reset UI elements
+            document.getElementById('currentAttempt').textContent = '1';
+            document.getElementById('userInput').value = '';
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('reportSection').style.display = 'none';
+            document.getElementById('submitBtn').disabled = false;
+
+            // Clear patient information
+            document.getElementById('patientName').value = '';
+            document.getElementById('patientId').value = '';
+
+            // Get new sentence
+            getNewSentence();
+        }
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + Enter to submit response
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                submitResponse();
+            }
+            
+            // Ctrl/Cmd + R to reset assessment (prevent default browser refresh)
+            if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+                e.preventDefault();
+                if (confirm('Are you sure you want to reset the assessment?')) {
+                    resetAssessment();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

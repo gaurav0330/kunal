@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fun Memory Games!</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f0f9ff;
+            margin: 0;
+            padding: 20px;
+            color: #2c3e50;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            color: #3498db;
+            text-align: center;
+        }
+
+        .game-container {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .btn {
+            display: block;
+            width: 200px;
+            margin: 10px auto;
+            padding: 15px;
+            background: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #27ae60;
+            transform: scale(1.05);
+        }
+
+        /* Game-specific styles */
+        .number-display {
+            font-size: 48px;
+            text-align: center;
+            margin: 20px 0;
+            color: #e74c3c;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .image-card {
+            aspect-ratio: 1;
+            background: #e8f4f8;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            cursor: pointer;
+        }
+
+        .story-container {
+            font-size: 20px;
+            line-height: 1.6;
+            padding: 20px;
+            background: #e8f4f8;
+            border-radius: 8px;
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #e8f4f8;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Fun Memory Games! 🎮</h1>
+
+        <!-- Welcome Section -->
+        <div class="game-container active" id="welcome">
+            <h2>Welcome! Let's Play! 🌟</h2>
+            <select id="grade" class="btn">
+                <option value="">Choose Your Grade</option>
+                <option value="1">Grade 1</option>
+                <option value="2">Grade 2</option>
+                <option value="3">Grade 3</option>
+                <option value="4">Grade 4</option>
+                <option value="5">Grade 5</option>
+                <option value="6">Grade 6</option>
+            </select>
+            <button class="btn" onclick="startGames()">Start Playing! 🎯</button>
+        </div>
+
+        <!-- Number Memory Game -->
+        <div class="game-container" id="number-game">
+            <h2>Remember the Numbers! 🔢</h2>
+            <div class="number-display" id="number-display"></div>
+            <input type="number" id="number-input" placeholder="Type the numbers you saw" class="btn" style="display: none;">
+            <button class="btn" id="number-btn" onclick="playNumberGame()">Start</button>
+        </div>
+
+        <!-- Emoji Memory Game -->
+        <div class="game-container" id="emoji-game">
+            <h2>Find the Matching Emojis! 🎯</h2>
+            <div class="image-grid" id="emoji-grid"></div>
+            <button class="btn" id="emoji-btn" onclick="playEmojiGame()">Start</button>
+        </div>
+
+        <!-- Story Memory Game -->
+        <div class="game-container" id="story-game">
+            <h2>Remember the Story! 📚</h2>
+            <div class="story-container" id="story-container"></div>
+            <div id="question-container" style="display: none;">
+                <input type="text" id="story-answer" placeholder="Answer the question" class="btn">
+                <button class="btn" onclick="checkStoryAnswer()">Submit Answer</button>
+            </div>
+            <button class="btn" id="story-btn" onclick="playStoryGame()">Start</button>
+        </div>
+
+        <!-- Final Score -->
+        <div class="game-container" id="final-score">
+            <h2>Great Job! 🌟</h2>
+            <div class="score-display" id="score-display"></div>
+            <button class="btn" onclick="location.reload()">Play Again! 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        let currentGame = 'welcome';
+        let grade = 1;
+        let scores = {
+            number: 0,
+            emoji: 0,
+            story: 0
+        };
+
+        // Content that adapts based on grade level
+        const gradeContent = {
+            numberLength: {
+                '1': 3, '2': 4, '3': 4, '4': 5, '5': 6, '6': 7
+            },
+            emojiPairs: {
+                '1': 3, '2': 4, '3': 5, '4': 6, '5': 7, '6': 8
+            },
+            stories: {
+                '1': {
+                    text: "The red cat played with a blue ball.",
+                    question: "What color was the ball?",
+                    answer: "blue"
+                },
+                '2': {
+                    text: "Tom saw three dogs playing in the park.",
+                    question: "How many dogs were in the park?",
+                    answer: "three"
+                },
+                '3': {
+                    text: "Sarah found five shells on the beach and gave two to her friend.",
+                    question: "How many shells did Sarah keep?",
+                    answer: "three"
+                },
+                '4': {
+                    text: "The green bird built a nest in the tall tree and laid four eggs.",
+                    question: "What color was the bird?",
+                    answer: "green"
+                },
+                '5': {
+                    text: "Max rode his bike to school, which took fifteen minutes. After school, he walked home, which took thirty minutes.",
+                    question: "How long did it take Max to walk home?",
+                    answer: "thirty"
+                },
+                '6': {
+                    text: "Jenny planted six red roses and eight yellow tulips in her garden. Three roses didn't grow.",
+                    question: "How many red roses grew in the garden?",
+                    answer: "three"
+                }
+            }
+        };
+
+        // Start the games after grade selection
+        function startGames() {
+            grade = document.getElementById('grade').value;
+            if (!grade) {
+                alert('Please choose your grade first!');
+                return;
+            }
+            switchGame('number-game');
+        }
+
+        // Switch between games
+        function switchGame(newGame) {
+            document.getElementById(currentGame).classList.remove('active');
+            document.getElementById(newGame).classList.add('active');
+            currentGame = newGame;
+        }
+
+        // Number Memory Game
+        function playNumberGame() {
+            const display = document.getElementById('number-display');
+            const input = document.getElementById('number-input');
+            const btn = document.getElementById('number-btn');
+
+            if (btn.textContent === 'Start') {
+                // Generate number sequence based on grade level
+                const length = gradeContent.numberLength[grade];
+                const numbers = Array.from({length}, () => Math.floor(Math.random() * 9) + 1).join('');
+                
+                display.textContent = numbers;
+                btn.style.display = 'none';
+
+                setTimeout(() => {
+                    display.textContent = '';
+                    input.style.display = 'block';
+                    btn.textContent = 'Submit';
+                    btn.style.display = 'block';
+                }, 3000);
+            } else {
+                const userInput = input.value;
+                const correct = display.dataset.numbers;
+                scores.number = calculateScore(userInput, correct);
+                switchGame('emoji-game');
+            }
+        }
+
+        // Emoji Memory Game
+        const emojis = ['🐶', '🐱', '🐰', '🐨', '🐯', '🦁', '🐸', '🐢'];
+        let emojiMatches = 0;
+
+        function playEmojiGame() {
+            const grid = document.getElementById('emoji-grid');
+            const btn = document.getElementById('emoji-btn');
+
+            if (btn.textContent === 'Start') {
+                const pairs = gradeContent.emojiPairs[grade];
+                const gameEmojis = emojis.slice(0, pairs);
+                const shuffled = [...gameEmojis, ...gameEmojis]
+                    .sort(() => Math.random() - 0.5);
+
+                grid.innerHTML = shuffled.map((emoji, i) => 
+                    `<div class="image-card" onclick="checkEmoji(${i})">${emoji}</div>`
+                ).join('');
+
+                setTimeout(() => {
+                    grid.querySelectorAll('.image-card').forEach(card => {
+                        card.textContent = '❓';
+                    });
+                    btn.textContent = 'Submit';
+                }, 3000);
+            } else {
+                scores.emoji = (emojiMatches / gradeContent.emojiPairs[grade]) * 10;
+                switchGame('story-game');
+            }
+        }
+
+        let firstClick = null;
+        function checkEmoji(index) {
+            const cards = document.querySelectorAll('.image-card');
+            if (cards[index].textContent === '❓') {
+                if (firstClick === null) {
+                    firstClick = index;
+                    cards[index].textContent = emojis[index % emojis.length];
+                } else {
+                    const secondClick = index;
+                    cards[secondClick].textContent = emojis[secondClick % emojis.length];
+
+                    if (cards[firstClick].textContent === cards[secondClick].textContent) {
+                        emojiMatches++;
+                    } else {
+                        setTimeout(() => {
+                            cards[firstClick].textContent = '❓';
+                            cards[secondClick].textContent = '❓';
+                        }, 1000);
+                    }
+                    firstClick = null;
+                }
+            }
+        }
+
+        // Story Memory Game
+        function playStoryGame() {
+            const container = document.getElementById('story-container');
+            const questionContainer = document.getElementById('question-container');
+            const btn = document.getElementById('story-btn');
+
+            if (btn.textContent === 'Start') {
+                const story = gradeContent.stories[grade];
+                container.textContent = story.text;
+                btn.style.display = 'none';
+
+                setTimeout(() => {
+                    container.textContent = story.question;
+                    questionContainer.style.display = 'block';
+                }, 5000);
+            }
+        }
+
+        function checkStoryAnswer() {
+            const answer = document.getElementById('story-answer').value.toLowerCase();
+            const story = gradeContent.stories[grade];
+            scores.story = answer.includes(story.answer) ? 10 : 0;
+            showFinalScore();
+        }
+
+        // Calculate score for number game
+        function calculateScore(input, correct) {
+            return input === correct ? 10 : 0;
+        }
+
+        // Show final score with encouraging message
+        function showFinalScore() {
+            switchGame('final-score');
+            const totalScore = Math.round((scores.number + scores.emoji + scores.story) / 3);
+            const display = document.getElementById('score-display');
+            
+            let message = "";
+            if (totalScore >= 8) message = "Amazing job! You're a memory champion! 🏆";
+            else if (totalScore >= 6) message = "Great work! Keep practicing! 🌟";
+            else message = "Good try! Let's play again to get even better! 💪";
+
+            display.innerHTML = `
+                <h3>Your Awesome Scores:</h3>
+                <p>Numbers Game: ${scores.number} points 🔢</p>
+                <p>Emoji Game: ${scores.emoji} points 🎯</p>
+                <p>Story Game: ${scores.story} points 📚</p>
+                <h3>Total Score: ${totalScore} points</h3>
+                <p>${message}</p>
+            `;
+        }
+    </script>
+</body>
+</html>

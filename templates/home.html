@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Disability Assessment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e90ff, #4169e1, #0000cd);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .title {
+            color: white;
+            font-size: 3.5rem;
+            text-align: center;
+            margin-bottom: 60px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: fadeInDown 1s ease;
+            line-height: 1.2;
+        }
+
+        .assessment-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 1s ease;
+        }
+
+        .assessment-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .assessment-card h2 {
+            color: #1e3a8a;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .assessment-card p {
+            color: #4a5568;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(45deg, #1e90ff, #4169e1);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(65, 105, 225, 0.4);
+            background: linear-gradient(45deg, #4169e1, #1e90ff);
+        }
+
+        .floating-shapes {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); }
+            100% { transform: translateY(-100vh) rotate(360deg); }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .assessment-card {
+                padding: 30px;
+            }
+
+            .button {
+                padding: 12px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <!-- Generated shapes will be added here via JavaScript -->
+    </div>
+
+    <div class="container">
+        <h1 class="title">Learning Disability Assessment</h1>
+        
+        <div class="assessment-card">
+            <h2>Individual Disability Assessment</h2>
+            <p>Get a personalized evaluation focusing on specific areas of learning and development. Our comprehensive assessment helps identify your unique learning style and potential areas for growth.</p>
+            <a href="http://127.0.0.1:5000/main" class="button">Begin Journey</a>
+        </div>
+    </div>
+
+    <script>
+        // Add floating shapes for background animation
+        function createFloatingShapes() {
+            const shapes = document.querySelector('.floating-shapes');
+            for (let i = 0; i < 20; i++) {
+                const shape = document.createElement('div');
+                shape.classList.add('shape');
+                
+                // Random properties for each shape
+                const size = Math.random() * 80 + 40;
+                shape.style.width = `${size}px`;
+                shape.style.height = `${size}px`;
+                shape.style.left = `${Math.random() * 100}%`;
+                shape.style.animationDuration = `${Math.random() * 20 + 15}s`;
+                shape.style.animationDelay = `${Math.random() * 5}s`;
+                shape.style.opacity = Math.random() * 0.3;
+                
+                shapes.appendChild(shape);
+            }
+        }
+
+        // Initialize floating shapes when the page loads
+        document.addEventListener('DOMContentLoaded', createFloatingShapes);
+    </script>
+</body>
+</html>
