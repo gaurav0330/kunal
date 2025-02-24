@@ -36,7 +36,7 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route('/adhd', methods=['POST'])
+@app.route('/adhdp', methods=['POST'])
 def predict_adhd():
     """Predict ADHD using the ADHD model."""
     data = request.json
